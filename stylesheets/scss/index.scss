@@ -1,0 +1,73 @@
+@import "reset";
+@import "snow";
+
+#background {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: radial-gradient(ellipse at bottom, #65d3ff 0%, #2068c7 100%);
+  transition: all .5s;
+  // &:hover {
+  //   opacity: 0;
+  // }
+}
+#setting {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 10px;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  svg {
+    fill: transparent;
+    filter: drop-shadow(0 0 5px #fff);
+    transform: scale(0.6);
+    transition: all .3s;
+  }
+  &:hover svg {
+    fill: rgba(255, 255, 255, .5);
+    transform: scale(1);
+  }
+}
+svg#house {
+  position: absolute;
+  bottom: 0;
+  fill: rgba(255, 255, 255, .15);
+  filter: drop-shadow(0 0 10px #fff);
+}
+#app {
+  // outline: 1px solid #ff0000;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 300px;
+  bottom: 100px;
+  font-size: 28px;
+  #slider {
+    input[type="range"] {
+      appearance: slider-vertical;
+      -webkit-appearance: slider-vertical;
+      -moz-appearance: slider-vertical;
+    }
+    .stick {
+      outline: 1px solid #ff0000;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all .5s;
+    }
+  }
+}
+
+
+input#xlsx {
+  display: none;
+}
+#toggle_snow {
+  display: none;
+}
