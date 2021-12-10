@@ -6,17 +6,6 @@ if (typeof total !== 'undefined'){
     snowflakes_count = total;
 }
 
-
-// This function allows you to turn on and off the snow
-function toggle_snow() {
-    let check_box = document.getElementById("toggle_snow");
-    if (check_box.checked == true) {
-        document.getElementById('snow').style.display = "block";
-    } else {
-        document.getElementById('snow').style.display = "none";
-    }
-}
-
 // Creating snowflakes
 function spawn_snow(snow_density = 200) {
     snow_density -= 1;
@@ -37,8 +26,6 @@ function add_css(rule) {
     document.getElementsByTagName("head")[0].appendChild(css);
 }
 
-
-
 // Math
 function random_int(value = 100){
     return Math.floor(Math.random() * value) + 1;
@@ -49,7 +36,6 @@ function random_range(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
 
 // Create style for snowflake
 function spawnSnowCSS(snow_density = 200){

@@ -1,5 +1,4 @@
 const inputXlsx = document.querySelector('input#xlsx')
-
 inputXlsx.addEventListener('change', async function(e) {
   const file = e.target.files[0]
   const data = await file.arrayBuffer()
@@ -14,15 +13,19 @@ inputXlsx.addEventListener('change', async function(e) {
     persons.push(sheets[key])
   }
 })
-// document.querySelector('#toggle_snow').click()
 
 const App = {
   data() {
     return {
+      openSnow: true,
       stick_X: null,
     }
   },
   methods: {
+    toggleSnow(ev) {
+      this.openSnow = ev.target.checked
+      localStorage.setItem('snowSwitch', ev.target.checked)
+    },
     dragStart(ev) {
       console.log('down')
       const stick = ev.target
@@ -38,7 +41,11 @@ const App = {
     dragEnd(ev) {
       
     },
-    
+  },
+  created() {
+    if (localStorage.getItem('snowSwitch') === 'false') {
+      this.openSnow = false
+    }
   }
 }
 Vue.createApp(App).mount('#app')

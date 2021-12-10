@@ -1,25 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css");
 @import "reset";
 @import "snow";
 
-#background {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: radial-gradient(ellipse at bottom, #65d3ff 0%, #2068c7 100%);
-  transition: all .5s;
-  // &:hover {
-  //   opacity: 0;
-  // }
-}
-#setting {
+// #background {
+//   position: absolute;
+//   top: 0;
+//   bottom: 0;
+//   left: 0;
+//   right: 0;
+//   background: radial-gradient(ellipse at bottom, #65d3ff 0%, #2068c7 100%);
+//   transition: all .5s;
+//   &:hover {
+//     opacity: 0;
+//   }
+// }
+#setting-icon {
   position: absolute;
   z-index: 1;
-  top: 10px;
-  right: 10px;
-  width: 70px;
-  height: 70px;
+  right: 20px;
+  bottom: 20px;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
   cursor: pointer;
   svg {
     fill: transparent;
@@ -32,42 +35,98 @@
     transform: scale(1);
   }
 }
+#setting-switch {
+  display: none;
+  &:checked + #setting-board {
+    display: flex;
+  }
+}
+#setting-board {
+  display: none;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: calc(100vw - 40px);
+  height: calc(100vh - 40px);
+  color: #44b;
+  font-size: 28px;
+  // font-weight: 600;
+  background-color: rgba(255,255,255,.6);
+  border-radius: 10px;
+  box-shadow: 0 0 8px 2px rgba(255,255,255,.6);
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 55px;
+    height: 55px;
+    display: block;
+    cursor: pointer;
+    line {
+      stroke: #eee;
+      stroke-width: 13;
+      stroke-linecap: round;
+    }
+  }
+  .other, .candidate {
+    padding: 40px;
+  }
+  .other {
+    width: 40%;
+    label {
+      margin-left: 5px;
+    }
+  }
+  .candidate {
+    width: 60%;
+  }
+  //common
+  .title {
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 40px;
+    font-weight: 600;
+    color: #44b;
+    border-bottom: 3px solid #44b;
+  }
+  label.switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    cursor: pointer;
+    input[type="checkbox"] {
+      display: none;
+      &:checked ~ .on {
+        opacity: 1;
+      }
+    }
+    i {
+      margin-right: 10px;
+    }
+    .on {
+      position: absolute;
+      left: 0;
+      opacity: 0;
+    }
+    .off {
+      display: block;
+    }
+  }
+}
+
 svg#house {
   position: absolute;
   bottom: 0;
   fill: rgba(255, 255, 255, .15);
   filter: drop-shadow(0 0 10px #fff);
 }
-#app {
-  // outline: 1px solid #ff0000;
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin: auto;
-  width: 300px;
-  bottom: 100px;
-  font-size: 28px;
-  #slider {
-    input[type="range"] {
-      appearance: slider-vertical;
-      -webkit-appearance: slider-vertical;
-      -moz-appearance: slider-vertical;
-    }
-    .stick {
-      outline: 1px solid #ff0000;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all .5s;
-    }
-  }
-}
 
 
 input#xlsx {
-  display: none;
-}
-#toggle_snow {
   display: none;
 }

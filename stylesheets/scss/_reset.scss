@@ -22,5 +22,15 @@ html, body {
   height: 100vh;
 }
 body {
-  background: radial-gradient(ellipse at bottom, #fff 0%, #2068c7 100%);
+  // background: radial-gradient(ellipse at bottom, #fff 0%, #2068c7 100%);
+  background: radial-gradient(ellipse at bottom, #65d3ff 0%, #2068c7 100%);
+  &, & * {
+    font-family: 'Open Sans', sans-serif;
+  }
+}
+[v-cloak] {
+  display: none !important;
+}
+.dblock {
+  display: block !important;
 }
