@@ -39,7 +39,7 @@
               <div class="text">(.xlsx)</div>
             </div>
           </label>
-          <ul>
+          <ul v-if="status === 'hasData' || status === 'showResult'">
             <li class="person" :class="{ winner: person.isWinner }" v-for="(person, index) in persons">
               <span>{{ person.name }}</span>
               <span class="remark" v-if="person.isWinner">已中獎</span>
@@ -115,12 +115,12 @@
         <path class="icon" d="M950 890 v-180 h-50 l100 -100 l100 100 h-50 v180"></path>
       </g>
       <g class="lottery" v-show="status === 'hasData'">
-        <line class="track" x1="1390" y1="630" x2="1390" y2="860"></line>
-        <rect class="thumb" x="1370" y="600" width="40" height="60" rx="7" ry="7" draggable="true"></rect>
-        <text class="name" x="1000" y="770" text-anchor="middle">OOO-OOO</text>
+        <line class="track" x1="1430" y1="630" x2="1430" y2="860"></line>
+        <rect class="thumb" x="1410" y="600" width="40" height="60" rx="7" ry="7" draggable="true"></rect>
+        <text class="name" x="1000" y="750" text-anchor="middle">OOO-OOO</text>
       </g>
       <g class="result">
-        <text class="winner" x="1000" y="770" text-anchor="middle"></text>
+        <text class="winner" x="1000" y="750" text-anchor="middle"></text>
       </g>
     </svg>
   </div>

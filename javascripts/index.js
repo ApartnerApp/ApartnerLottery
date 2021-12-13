@@ -54,10 +54,12 @@ const app = new Vue({
         this.persons.push({ id: i++, name, isWinner: false })
       }
     },
-    showWinner(winner) {
-      this.status = 'showResult'
+    markWinner(winner) {
+      // this.status = 'showResult'
+      //設定面板標示已中獎
       const winnerInSetting = this.persons.find(p => p.id === winner.id)
       winnerInSetting.isWinner = true
+      
     }
   },
   created() {
@@ -67,8 +69,9 @@ const app = new Vue({
   }
 })
 
+const paper = Snap('#house')
 const thumb = Snap.select('#house .lottery .thumb')
-const personName = Snap.select('#house .lottery .name')
+const lotteryGroup = Snap.select('#house .lottery')
 const winnerName = Snap.select('#house .result .winner')
 const houseHeight = document.getElementById('house').getBoundingClientRect().height
 
@@ -97,28 +100,38 @@ function dragStart(_x, y, _ev) {
 }
 function dragEnd(ev) {
   const currentY = +this.attr('y')
-  if (currentY > critical) {
-    runShuffle()
+  const isRun = currentY > critical
+  if (isRun) {
     this.undrag()
   }
-  thumbRollback(this)
+  thumbRollback(this, isRun)
 }
-function thumbRollback(thumb) {
-  thumb.animate({ y: thumbInitY }, 150, mina.easeinout)
+function thumbRollback(thumb, isRun) {
+  thumb.animate({ y: thumbInitY }, 50, mina.easeinout, isRun ? runShuffle : null)
 }
 async function runShuffle() {
+  Snap.select('#house .lottery .name').remove()
+  
   let currentPerson = null
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 36; i++) {
     const person = getRandomPerson(app.$data.persons, currentPerson?.id)
+    const interval = mina.easeout(i) * 1.5
     const name = await new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(person.name)
-      }, Math.floor(i * i * 0.05))
+      }, interval)
     })
-    personName.node.textContent = name
+    const personName = paper.text(1000, 750, name)
+      .attr({ 'text-anchor': 'middle', 'transform-origin': '1000 700' })
+      .addClass('name')
+    personName.animate({ transform: 'scale(1.1)', opacity: '0.7' }, interval, mina.easein, function() {
+      this.remove()
+    })
+    lotteryGroup.add(personName)
     currentPerson = person
   }
-  app.showWinner(currentPerson)
+  app.markWinner(currentPerson)
+  showWinner(currentPerson)
 }
 function getRandomPerson(persons, currentId) {
   let person = null
@@ -126,6 +139,9 @@ function getRandomPerson(persons, currentId) {
     person = persons.randomItem()
   } while (person.id === currentId)
   return person
+}
+function showWinner(params) {
+  
 }
 
 thumb.drag(dragMove, dragStart, dragEnd)

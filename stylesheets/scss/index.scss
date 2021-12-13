@@ -79,8 +79,10 @@
         border: 2px solid transparent;
         border-radius: 8px;
         &:hover {
-          background-color: rgba(85, 85, 204, .6);
-          opacity: .7;
+          background-color: rgba(85, 85, 204, .3);
+        }
+        &:active {
+          background-color: rgba(85, 85, 204, .5);
         }
       }
     }
@@ -221,7 +223,7 @@ svg#house {
   }
   .lottery {
     .track {
-      stroke: rgba(255, 255, 255, .15);
+      stroke: rgba(255, 255, 255, .1);
       stroke-width: 10;
       stroke-linecap: round;
     }
@@ -235,11 +237,8 @@ svg#house {
         fill: rgba(255, 255, 255, 1);
       }
       &.trigger {
-        fill: #ffb;
+        fill: rgba(255, 255, 187, .7);
         filter: drop-shadow(0 0 10px #ffb);
-      }
-      &.disable {
-        fill: rgba(255, 255, 255, .2)
       }
     }
   }
@@ -250,7 +249,8 @@ svg#house {
   }
   //common
   .name {
-    fill: rgba(255, 255, 255, .2);
+    fill: rgb(255, 255, 255);
+    opacity: .15;
     user-select: none;
     font-size: 90px;
   }
