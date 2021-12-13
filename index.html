@@ -21,29 +21,15 @@
       </svg>
     </label>
     <input type="checkbox" id="setting-switch">
+    <label id="setting-close" for="setting-switch"></label>
     <div id="setting-board">
-      <label class="close" for="setting-switch">
-        <svg viewbox="0 0 100 100">
-          <line x1="20" y1="20" x2="80" y2="80"></line>
-          <line x1="80" y1="20" x2="20" y2="80"></line>
-        </svg>
-      </label>
-      <div class="other">
-        <div class="title">基本設定</div>
-        <div class="content">
-          <label class="button switch" for="toggle-snow">
-            <input type="checkbox" id="toggle-snow" v-model="openSnow" @change="toggleSnow">
-            <i class="fas fa-check-square on"></i>
-            <i class="far fa-square off"></i>
-            下雪效果
-          </label>
-          <button class="button" @click="clearPersons">重設名單</button>
-        </div>
-      </div>
       <div class="candidate">
-        <div class="title">伴兒名單</div>
+        <div class="title">
+          伴兒名單
+          <button id="reset" class="button" @click="clearPersons">重設名單</button>
+        </div>
         <div class="content">
-          <label class="button upload" for="xlsx" v-if="persons.length === 0">
+          <label class="button upload" for="xlsx" v-if="status === 'noData'">
             <svg class="border">
               <rect width="98%" height="98%" x="1%" y="1%" rx="40" ry="40"></rect>
             </svg>
@@ -54,8 +40,22 @@
             </div>
           </label>
           <ul>
-            <li class="person" v-for="(person, index) in persons">{{ person }} - {{ index }}</li>
+            <li class="person" :class="{ winner: person.isWinner }" v-for="(person, index) in persons">
+              <span>{{ person.name }}</span>
+              <span class="remark" v-if="person.isWinner">已中獎</span>
+            </li>
           </ul>
+        </div>
+      </div>
+      <div class="other">
+        <div class="title">其他設定</div>
+        <div class="content">
+          <label class="button switch" for="toggle-snow">
+            <input type="checkbox" id="toggle-snow" v-model="openSnow" @change="toggleSnow">
+            <i class="fas fa-check-square on"></i>
+            <i class="far fa-square off"></i>
+            下雪效果
+          </label>
         </div>
       </div>
     </div>
@@ -110,24 +110,25 @@
         a25 25 0 0 0 40 -30 l-30 -60
         a25 25 0 0 0 -40 30 Z">
       </path>
-      <g class="upload" @click="openUploadWindow" v-if="persons.length === 0">
+      <g class="upload" @click="openUploadWindow" v-if="status === 'noData'">
         <circle class="hover-area" cx="1000" cy="720" r="200"></circle>
         <path class="icon" d="M950 890 v-180 h-50 l100 -100 l100 100 h-50 v180"></path>
       </g>
-      <g v-if="persons.length > 0">
-        <g class="slider">
-          <rect class="thumb" x="1200" y="700" width="30" height="50" rx="7" ry="7" draggable="true"></rect>
-        </g>
+      <g class="lottery" v-show="status === 'hasData'">
+        <line class="track" x1="1390" y1="630" x2="1390" y2="860"></line>
+        <rect class="thumb" x="1370" y="600" width="40" height="60" rx="7" ry="7" draggable="true"></rect>
+        <text class="name" x="1000" y="770" text-anchor="middle">OOO-OOO</text>
+      </g>
+      <g class="result">
+        <text class="winner" x="1000" y="770" text-anchor="middle"></text>
       </g>
     </svg>
-    
-    <!-- <div class="stick" @mousedown="dragStart"></div> -->
-    <!-- @drag="draging" @dragend="dragEnd" -->
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.min.js" integrity="sha512-XdUZ5nrNkVySQBnnM5vzDqHai823Spoq1W3pJoQwomQja+o4Nw0Ew1ppxo5bhF2vMug6sfibhKWcNJsG8Vj9tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" integrity="sha512-Gk+uNk8NWN235mIkS6B7/424TsDuPDaoAsUekJCKTWLKP6wlaPv+PBGfO7dbvZeibVPGW+mYidz0vL0XaWwz4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg.js" integrity="sha512-2B4yJ2DGhmYITzY51PcSK5pxQilqi1Cl3wgI8dq8phWjbVAw9SmcaTZp+QsSCdV/xKkxttyYolU0usNNG1ICbQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" integrity="sha512-Gk+uNk8NWN235mIkS6B7/424TsDuPDaoAsUekJCKTWLKP6wlaPv+PBGfO7dbvZeibVPGW+mYidz0vL0XaWwz4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg.js" integrity="sha512-2B4yJ2DGhmYITzY51PcSK5pxQilqi1Cl3wgI8dq8phWjbVAw9SmcaTZp+QsSCdV/xKkxttyYolU0usNNG1ICbQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.min.js" integrity="sha512-W/mRQs9ZSFpF14X/4aRgQss7+HRsVXsph+Y6DGLeqIqK8IpO+rQz0ISUEXkTeeKF7tivoGv+Ru7SpocS/1qahg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="./javascripts/util.js"></script>
   <script src="./javascripts/snow.js"></script>
   <script src="./javascripts/index.js"></script>
 </body>

@@ -6,8 +6,8 @@
 #setting-icon {
   position: absolute;
   z-index: 1;
-  right: 20px;
-  bottom: 20px;
+  top: 20px;
+  left: 20px;
   width: 65px;
   height: 65px;
   border-radius: 50%;
@@ -25,57 +25,46 @@
 }
 #setting-switch {
   display: none;
-  &:checked + #setting-board {
-    display: flex;
+  &:checked ~ #setting-close {
+    display: block;
+  }
+  &:checked ~ #setting-board {
+    right: 70%;
   }
 }
-#setting-board {
-  display: none;
+#setting-close {
   position: absolute;
   z-index: 100;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  width: calc(100vw - 40px);
-  height: calc(100vh - 40px);
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+#setting-board {
+  position: absolute;
+  right: 102%;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  height: 100%;
   color: #55c;
   background-color: rgba(255,255,255,.6);
-  border-radius: 10px;
   box-shadow: 0 0 8px 2px rgba(255,255,255,.6);
+  transition: all .4s;
   * {
     color: #55c;
     font-size: 28px;
   }
-  .close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 40px;
-    height: 40px;
-    display: block;
-    cursor: pointer;
-    line {
-      stroke: #fff;
-      stroke-width: 13;
-      stroke-linecap: round;
-    }
-  }
-  .other, .candidate {
-    padding: 50px;
-  }
-  .other {
-    width: 40%;
-    label {
-      margin-left: 5px;
-    }
+  .candidate, .other {
+    padding: 40px 40px 0;
   }
   .candidate {
     display: flex;
     flex-direction: column;
-    padding-right: 100px;
-    width: 60%;
+    height: 75%;
+    #reset {
+      float: right;
+    }
     .content {
       display: flex;
       flex-grow: 1;
@@ -106,12 +95,12 @@
         margin: auto;
       }
       .icon {
-        font-size: 200px;
+        font-size: 180px;
         margin-bottom: 10px;
       }
       .text {
         text-align: center;
-        font-size: 32px;
+        font-size: 42px;
       }
       svg, .icon-group{
         opacity: .15;
@@ -139,11 +128,23 @@
         stroke-dasharray: 30 10;
       }
     }
+    ul, ul .person {
+      width: 100%;
+    }
     .person {
-      padding: 5px 0 5px;
-      &.winner {
-        color: #ff0;
+      display: block;
+      padding: 5px 30px 5px 0;
+      &.winner * {
+        color: rgb(255, 51, 51);
       }
+      .remark {
+        float: right;
+      }
+    }
+  }
+  .other {
+    label {
+      margin-left: 5px;
     }
   }
   //common
@@ -183,7 +184,7 @@
   }
   button.button {
     display: block;
-    padding: 8px 15px;
+    padding: 6px 12px;
     border-radius: 10px;
     border: 2px solid #55c;
     &:hover {
@@ -194,9 +195,11 @@
 svg#house {
   position: absolute;
   bottom: 0;
-  filter: drop-shadow(0 0 10px #fff);
+  .shell, .upload *, .slider *, .lottery * {
+    filter: drop-shadow(0 0 10px #fff);
+  }
   .shell {
-    fill: rgba(255, 255, 255, .15);
+    fill: rgba(255, 255, 255, .1);
   }
   .upload {
     .hover-area {
@@ -216,13 +219,39 @@ svg#house {
       transition: all .3s;
     }
   }
-  .slider {
+  .lottery {
+    .track {
+      stroke: rgba(255, 255, 255, .15);
+      stroke-width: 10;
+      stroke-linecap: round;
+    }
     .thumb {
       cursor: pointer;
-      fill: rgba(255, 255, 255, .3);
+      fill: rgba(255, 255, 255, .5);
       &:hover {
-        fill: rgba(255, 255, 255, .4);
+        fill: rgba(255, 255, 255, .7);
+      }
+      &:active {
+        fill: rgba(255, 255, 255, 1);
+      }
+      &.trigger {
+        fill: #ffb;
+        filter: drop-shadow(0 0 10px #ffb);
+      }
+      &.disable {
+        fill: rgba(255, 255, 255, .2)
       }
     }
+  }
+  .result {
+    .winner {
+      
+    }
+  }
+  //common
+  .name {
+    fill: rgba(255, 255, 255, .2);
+    user-select: none;
+    font-size: 90px;
   }
 }
