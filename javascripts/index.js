@@ -2,20 +2,9 @@ const app = new Vue({
   el: '#app',
   data: {
     openSnow: true,
-    status: 'hasData', // 上傳前: noData, 上傳後: hasData, 顯示結果: showResult
-    persons: [
-      { id: 0, name: '王小明0', isWinner: false },
-      { id: 1, name: '王小明1', isWinner: false },
-      { id: 2, name: '王小明2', isWinner: false },
-      { id: 3, name: '王小明3', isWinner: false },
-      { id: 4, name: '王小明4', isWinner: false },
-      { id: 5, name: '王小明5', isWinner: false },
-      { id: 6, name: '王小明6', isWinner: false },
-      { id: 7, name: '王小明7', isWinner: false },
-      { id: 8, name: '王小明8', isWinner: false },
-      { id: 9, name: '王小明9', isWinner: false },
-      // { id: 10, name: '王小明10' },
-    ],
+    status: 'noData', // 上傳前: noData, 上傳後: hasData
+    isShuffling: false,
+    persons: [],
   },
   methods: {
     toggleSnow(ev) {
@@ -28,6 +17,7 @@ const app = new Vue({
     clearPersons() {
       this.persons = []
       this.status = 'noData'
+      resetNamePrompt()
     },
     async uploadXlsx(ev) {
       this.persons = []
@@ -40,9 +30,8 @@ const app = new Vue({
       const data = await file.arrayBuffer()
       const workbook = XLSX.read(data)
       const sheets = workbook.Sheets[Object.keys(workbook.Sheets)[0]]
-      let i = 0
-      this.status = 'hasData'
       
+      let i = 0
       for (const key in sheets) {
         if (key.startsWith('!')) {
           continue
@@ -53,13 +42,20 @@ const app = new Vue({
         }
         this.persons.push({ id: i++, name, isWinner: false })
       }
+      
+      if (this.persons.length <= 0) {
+        ev.target.value = null
+        return
+      }
+      this.status = 'hasData'
+    },
+    toggleShuffling(value) {
+      this.isShuffling = value
     },
     markWinner(winner) {
-      // this.status = 'showResult'
-      //設定面板標示已中獎
+      // 設定面板標示已中獎
       const winnerInSetting = this.persons.find(p => p.id === winner.id)
       winnerInSetting.isWinner = true
-      
     }
   },
   created() {
@@ -71,8 +67,8 @@ const app = new Vue({
 
 const paper = Snap('#house')
 const thumb = Snap.select('#house .lottery .thumb')
+const prompt = Snap.select('#house .lottery .prompt')
 const lotteryGroup = Snap.select('#house .lottery')
-const winnerName = Snap.select('#house .result .winner')
 const houseHeight = document.getElementById('house').getBoundingClientRect().height
 
 let thumbAdjustY;
@@ -110,38 +106,69 @@ function thumbRollback(thumb, isRun) {
   thumb.animate({ y: thumbInitY }, 50, mina.easeinout, isRun ? runShuffle : null)
 }
 async function runShuffle() {
-  Snap.select('#house .lottery .name').remove()
-  
+  app.toggleShuffling(true)
+  // 移除OOO-OOO
+  Snap.select('#house .lottery .name')?.remove()
+  // 洗牌35次
   let currentPerson = null
-  for (let i = 0; i < 36; i++) {
-    const person = getRandomPerson(app.$data.persons, currentPerson?.id)
+  const candidates = app.$data.persons.filter(p => !p.isWinner)
+  for (let i = 0; i < 35; i++) {
+    const person = getRandomPerson(candidates, currentPerson?.id)
     const interval = mina.easeout(i) * 1.5
-    const name = await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(person.name)
-      }, interval)
-    })
-    const personName = paper.text(1000, 750, name)
-      .attr({ 'text-anchor': 'middle', 'transform-origin': '1000 700' })
-      .addClass('name')
-    personName.animate({ transform: 'scale(1.1)', opacity: '0.7' }, interval, mina.easein, function() {
+    
+    popPerson(person.name, interval, function() {
       this.remove()
     })
-    lotteryGroup.add(personName)
+    await new Promise(resolve => setTimeout(resolve, interval))
     currentPerson = person
   }
-  app.markWinner(currentPerson)
-  showWinner(currentPerson)
+  //抽出最終得獎者
+  const winner = getRandomPerson(candidates, currentPerson.id)
+  endingFlash()
+  popPerson(winner.name, mina.easeout(36) * 2, function() {
+    app.markWinner(winner)
+    app.toggleShuffling(false)
+    resetThumb()
+  })
 }
-function getRandomPerson(persons, currentId) {
+// 取得和上次不一樣的人
+function getRandomPerson(candidates, currentId) {
   let person = null
   do {
-    person = persons.randomItem()
-  } while (person.id === currentId)
+    person = candidates.randomItem()
+  } while (person.id === currentId && candidates.length > 1)
   return person
 }
-function showWinner(params) {
-  
+function popPerson(name, interval, callback) {
+  lotteryGroup.add(
+    paper.text(1000, 750, name)
+      .attr({ 'text-anchor': 'middle', 'transform-origin': '1000 700' })
+      .addClass('name')
+      .animate({ transform: 'scale(1.15)', opacity: 0.7 }, interval, mina.easein, callback)
+  )
 }
-
-thumb.drag(dragMove, dragStart, dragEnd)
+function endingFlash() {
+  const flashBackground = document.getElementById('flash-background')
+  flashBackground.animate([
+    { backgroundColor: 'rgba(255,255,255,0.7)' },
+    { backgroundColor: 'rgba(255,255,255,0)' }
+  ], {
+    duration: 2000,
+    easing: 'ease-in'
+  })
+}
+function resetNamePrompt() {
+  Snap.select('#house .lottery .name')?.remove()
+  lotteryGroup.add(prompt)
+}
+function resetThumb() {
+  const candidates = app.$data.persons.filter(p => !p.isWinner)
+  if (candidates.length > 0) {
+    setThumb()
+  }
+}
+function setThumb() {
+  thumb.drag(dragMove, dragStart, dragEnd)
+  thumb.removeClass('trigger')
+}
+setThumb()

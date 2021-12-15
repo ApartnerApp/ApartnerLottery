@@ -22,9 +22,7 @@ html, body {
   height: 100vh;
 }
 body {
-  // background: radial-gradient(ellipse at bottom, #fff 0%, #2068c7 100%);
   background: radial-gradient(ellipse at bottom, #65d3ff 0%, #2068c7 100%);
-  // background-color: #2ea6eb;
   &, & * {
     font-family: 'Open Sans', sans-serif;
   }

@@ -12,6 +12,7 @@
 
 <body>
   <div id="app" v-cloak>
+    <div id="flash-background"></div>
     <div id="snow" v-bind:class="{ dBlock: openSnow }"></div>
     <label id="setting-icon" for="setting-switch">
       <svg viewbox="0 0 1000 1000">
@@ -26,7 +27,7 @@
       <div class="candidate">
         <div class="title">
           伴兒名單
-          <button id="reset" class="button" @click="clearPersons">重設名單</button>
+          <button id="reset" @click="clearPersons" v-bind:disabled="isShuffling || status === 'noData'">重設名單</button>
         </div>
         <div class="content">
           <label class="button upload" for="xlsx" v-if="status === 'noData'">
@@ -39,7 +40,7 @@
               <div class="text">(.xlsx)</div>
             </div>
           </label>
-          <ul v-if="status === 'hasData' || status === 'showResult'">
+          <ul v-if="status === 'hasData'">
             <li class="person" :class="{ winner: person.isWinner }" v-for="(person, index) in persons">
               <span>{{ person.name }}</span>
               <span class="remark" v-if="person.isWinner">已中獎</span>
@@ -117,16 +118,12 @@
       <g class="lottery" v-show="status === 'hasData'">
         <line class="track" x1="1430" y1="630" x2="1430" y2="860"></line>
         <rect class="thumb" x="1410" y="600" width="40" height="60" rx="7" ry="7" draggable="true"></rect>
-        <text class="name" x="1000" y="750" text-anchor="middle">OOO-OOO</text>
-      </g>
-      <g class="result">
-        <text class="winner" x="1000" y="750" text-anchor="middle"></text>
+        <text class="name prompt" x="1000" y="750" text-anchor="middle">OOO-OOO</text>
       </g>
     </svg>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.min.js" integrity="sha512-XdUZ5nrNkVySQBnnM5vzDqHai823Spoq1W3pJoQwomQja+o4Nw0Ew1ppxo5bhF2vMug6sfibhKWcNJsG8Vj9tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" integrity="sha512-Gk+uNk8NWN235mIkS6B7/424TsDuPDaoAsUekJCKTWLKP6wlaPv+PBGfO7dbvZeibVPGW+mYidz0vL0XaWwz4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg.js" integrity="sha512-2B4yJ2DGhmYITzY51PcSK5pxQilqi1Cl3wgI8dq8phWjbVAw9SmcaTZp+QsSCdV/xKkxttyYolU0usNNG1ICbQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.min.js" integrity="sha512-W/mRQs9ZSFpF14X/4aRgQss7+HRsVXsph+Y6DGLeqIqK8IpO+rQz0ISUEXkTeeKF7tivoGv+Ru7SpocS/1qahg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="./javascripts/util.js"></script>
   <script src="./javascripts/snow.js"></script>

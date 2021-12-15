@@ -3,6 +3,12 @@
 @import "reset";
 @import "snow";
 
+#flash-background {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
 #setting-icon {
   position: absolute;
   z-index: 1;
@@ -184,20 +190,25 @@
       display: block;
     }
   }
-  button.button {
+  button {
     display: block;
     padding: 6px 12px;
     border-radius: 10px;
     border: 2px solid #55c;
+    cursor: pointer;
     &:hover {
       filter: brightness(1.15);
+    }
+    &:disabled {
+      cursor: default;
+      filter: opacity(0.4);
     }
   }
 }
 svg#house {
   position: absolute;
   bottom: 0;
-  .shell, .upload *, .slider *, .lottery * {
+  .shell, .upload *, .lottery *, .result * {
     filter: drop-shadow(0 0 10px #fff);
   }
   .shell {
@@ -230,6 +241,7 @@ svg#house {
     .thumb {
       cursor: pointer;
       fill: rgba(255, 255, 255, .5);
+      transition: fill .3s;
       &:hover {
         fill: rgba(255, 255, 255, .7);
       }
@@ -237,21 +249,20 @@ svg#house {
         fill: rgba(255, 255, 255, 1);
       }
       &.trigger {
-        fill: rgba(255, 255, 187, .7);
+        fill: rgba(255, 255, 187, 1);
         filter: drop-shadow(0 0 10px #ffb);
       }
     }
   }
-  .result {
-    .winner {
-      
-    }
-  }
-  //common
-  .name {
+  .prompt, .name {
     fill: rgb(255, 255, 255);
-    opacity: .15;
     user-select: none;
     font-size: 90px;
+  }
+  .name {
+    opacity: 0;
+    &.prompt {
+      opacity: 0.15;
+    }
   }
 }
