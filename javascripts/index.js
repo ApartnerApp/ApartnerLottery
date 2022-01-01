@@ -1,9 +1,14 @@
 const app = new Vue({
   el: '#app',
   data: {
+    mainTitle: '12月份滿意度調查抽獎',
+    subTitle: '半伴共居公寓',
+    awardTitle: '租金優惠$1000',
+    lineLength: 920,
+    lineStart: 540,
+    lineEnd: 1460,
     openSnow: true,
-    status: 'noData', // 上傳前: noData, 上傳後: hasData
-    isShuffling: false,
+    status: 0, // 上傳前: 0, 上傳後: 1, 洗牌中: 2, 出現得獎者:3
     persons: [],
   },
   methods: {
@@ -11,12 +16,15 @@ const app = new Vue({
       this.openSnow = ev.target.checked
       localStorage.setItem('snowSwitch', ev.target.checked)
     },
+    setStatus(status) {
+      this.status = status
+    },
     openUploadWindow() {
       this.$refs.xlsx.click()
     },
     clearPersons() {
       this.persons = []
-      this.status = 'noData'
+      this.status = 0
       resetNamePrompt()
     },
     async uploadXlsx(ev) {
@@ -47,20 +55,35 @@ const app = new Vue({
         ev.target.value = null
         return
       }
-      this.status = 'hasData'
+      this.status = 1
     },
-    toggleShuffling(value) {
-      this.isShuffling = value
+    saveTitle(key, text) {
+      localStorage.setItem(key, text)
     },
-    markWinner(winner) {
+    blurInput(ev) {
+      ev.target.blur()
+    },
+    markWinner(winnerId) {
       // 設定面板標示已中獎
-      const winnerInSetting = this.persons.find(p => p.id === winner.id)
+      const winnerInSetting = this.persons.find(p => p.id === winnerId)
       winnerInSetting.isWinner = true
     }
   },
   created() {
     if (localStorage.getItem('snowSwitch') === 'false') {
       this.openSnow = false
+    }
+    const mainTitle = localStorage.getItem('mainTitle')
+    if (mainTitle) {
+      this.mainTitle = mainTitle
+    }
+    const subTitle = localStorage.getItem('subTitle')
+    if (localStorage.getItem('subTitle')) {
+      this.subTitle = subTitle
+    }
+    const awardTitle = localStorage.getItem('awardTitle')
+    if (localStorage.getItem('awardTitle')) {
+      this.awardTitle = awardTitle
     }
   }
 })
@@ -74,7 +97,7 @@ const houseHeight = document.getElementById('house').getBoundingClientRect().hei
 let thumbAdjustY;
 const thumbInitY = +thumb.attr('y'),
       thumbMinY = +thumb.attr('y'),
-      thumbMaxY = 830,
+      thumbMaxY = 890,
       critical = (thumbMaxY - thumbMinY) * 0.9 + thumbMinY
 
 function dragMove(_dx, _dy, _x, y, _ev) {
@@ -106,9 +129,7 @@ function thumbRollback(thumb, isRun) {
   thumb.animate({ y: thumbInitY }, 50, mina.easeinout, isRun ? runShuffle : null)
 }
 async function runShuffle() {
-  app.toggleShuffling(true)
-  // 移除OOO-OOO
-  Snap.select('#house .lottery .name')?.remove()
+  app.setStatus(2)
   // 洗牌35次
   let currentPerson = null
   const candidates = app.$data.persons.filter(p => !p.isWinner)
@@ -116,20 +137,15 @@ async function runShuffle() {
     const person = getRandomPerson(candidates, currentPerson?.id)
     const interval = mina.easeout(i) * 1.5
     
-    popPerson(person.name, interval, function() {
-      this.remove()
-    })
+    popPerson(person, interval)
     await new Promise(resolve => setTimeout(resolve, interval))
     currentPerson = person
   }
   //抽出最終得獎者
   const winner = getRandomPerson(candidates, currentPerson.id)
   endingFlash()
-  popPerson(winner.name, mina.easeout(36) * 2, function() {
-    app.markWinner(winner)
-    app.toggleShuffling(false)
-    resetThumb()
-  })
+  app.setStatus(3)
+  popWinner(winner, mina.easeout(36) * 2)
 }
 // 取得和上次不一樣的人
 function getRandomPerson(candidates, currentId) {
@@ -139,12 +155,26 @@ function getRandomPerson(candidates, currentId) {
   } while (person.id === currentId && candidates.length > 1)
   return person
 }
-function popPerson(name, interval, callback) {
+function popPerson(person, interval) {
   lotteryGroup.add(
-    paper.text(1000, 750, name)
-      .attr({ 'text-anchor': 'middle', 'transform-origin': '1000 700' })
+    paper.text(1000, 820, person.name)
+      .attr({ 'text-anchor': 'middle', transform: 'scale(0.9)', 'transform-origin': '1000 770' })
       .addClass('name')
-      .animate({ transform: 'scale(1.15)', opacity: 0.7 }, interval, mina.easein, callback)
+      .animate({ transform: 'scale(1.1)', opacity: 0.6 }, interval, mina.easein, function() {
+        this.remove()
+      })
+  )
+}
+function popWinner(winner, interval) {
+  lotteryGroup.add(
+    paper.text(1000, 820, winner.name)
+      .attr({ 'text-anchor': 'middle', transform: 'scale(0.9)', 'transform-origin': '1000 770' })
+      .addClass('name')
+      .animate({ transform: 'scale(1.6)', opacity: 1 }, interval, mina.easein, function() {
+        app.markWinner(winner.id)
+        this.addClass('winner')
+        this.click(resetAll)
+      })
   )
 }
 function endingFlash() {
@@ -155,6 +185,13 @@ function endingFlash() {
   ], {
     duration: 2000,
     easing: 'ease-in'
+  })
+}
+function resetAll() {
+  this.animate({ opacity: 0 }, 800, mina.linear, function() {
+    app.setStatus(1)
+    this.remove()
+    resetThumb()
   })
 }
 function resetNamePrompt() {
