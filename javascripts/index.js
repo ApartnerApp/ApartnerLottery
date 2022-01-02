@@ -10,6 +10,7 @@ const app = new Vue({
     openSnow: true,
     status: 0, // 上傳前: 0, 上傳後: 1, 洗牌中: 2, 出現得獎者:3
     persons: [],
+    round: 1,
   },
   methods: {
     toggleSnow(ev) {
@@ -25,7 +26,7 @@ const app = new Vue({
     clearPersons() {
       this.persons = []
       this.status = 0
-      resetNamePrompt()
+      this.round = 1
     },
     async uploadXlsx(ev) {
       this.persons = []
@@ -65,8 +66,17 @@ const app = new Vue({
     },
     markWinner(winnerId) {
       // 設定面板標示已中獎
-      const winnerInSetting = this.persons.find(p => p.id === winnerId)
-      winnerInSetting.isWinner = true
+      const person = this.persons.find(p => p.id === winnerId)
+      person.isWinner = true
+      person.winRound = this.round
+    }
+  },
+  computed: {
+    winners() {
+      return this.persons.filter(p => p.isWinner)
+    },
+    losers() {
+      return this.persons.filter(p => !p.isWinner)
     }
   },
   created() {
@@ -132,7 +142,7 @@ async function runShuffle() {
   app.setStatus(2)
   // 洗牌35次
   let currentPerson = null
-  const candidates = app.$data.persons.filter(p => !p.isWinner)
+  const candidates = app.persons.filter(p => !p.isWinner)
   for (let i = 0; i < 35; i++) {
     const person = getRandomPerson(candidates, currentPerson?.id)
     const interval = mina.easeout(i) * 1.5
@@ -190,16 +200,13 @@ function endingFlash() {
 function resetAll() {
   this.animate({ opacity: 0 }, 800, mina.linear, function() {
     app.setStatus(1)
+    app.round += 1
     this.remove()
     resetThumb()
   })
 }
-function resetNamePrompt() {
-  Snap.select('#house .lottery .name')?.remove()
-  lotteryGroup.add(prompt)
-}
 function resetThumb() {
-  const candidates = app.$data.persons.filter(p => !p.isWinner)
+  const candidates = app.persons.filter(p => !p.isWinner)
   if (candidates.length > 0) {
     setThumb()
   }
