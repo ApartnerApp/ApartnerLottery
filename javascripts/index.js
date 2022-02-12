@@ -74,6 +74,7 @@ const app = new Vue({
   computed: {
     winners() {
       return this.persons.filter(p => p.isWinner)
+        .sort((p1, p2) => p1.winRound - p2.winRound)
     },
     losers() {
       return this.persons.filter(p => !p.isWinner)
