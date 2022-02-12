@@ -199,6 +199,7 @@ function endingFlash() {
   })
 }
 function resetAll() {
+  this.unclick(resetAll) // 避免重複點擊
   this.animate({ opacity: 0 }, 800, mina.linear, function() {
     app.setStatus(1)
     app.round += 1
