@@ -31,7 +31,7 @@ const app = new Vue({
     async uploadXlsx(ev) {
       this.persons = []
       const file = ev.target.files[0]
-      //限制上傳xlsx
+      // 限制上傳xlsx
       if (!file.name.endsWith('.xlsx')) {
         ev.target.value = null
         return
@@ -152,7 +152,7 @@ async function runShuffle() {
     await new Promise(resolve => setTimeout(resolve, interval))
     currentPerson = person
   }
-  //抽出最終得獎者
+  // 抽出最終得獎者
   const winner = getRandomPerson(candidates, currentPerson.id)
   endingFlash()
   app.setStatus(3)
