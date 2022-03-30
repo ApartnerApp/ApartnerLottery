@@ -1,17 +1,26 @@
 @import "reset";
+@import "firefly";
 @import "snow";
 
-#flash-background {
+#flash-screen {
   position: absolute;
-  z-index: -1;
   width: 100%;
   height: 100%;
+  z-index: 99;
+  pointer-events: none;
 }
 #logo {
   position: absolute;
   width: 14vw;
   right: 25px;
   top: 15px;
+}
+.background {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 .setting-icon {
   position: absolute;
@@ -40,30 +49,30 @@
   }
 }
 $board-width: 28%;
-#setting-base, #setting-text {
+#switch-player-list, #switch-setting {
   display: none;
   &:checked + .close-area {
     display: block;
   }
 }
-#setting-base {
-  &:checked ~ #setting-base-board {
+#switch-player-list {
+  &:checked ~ .board#player-list {
     right: 100% - $board-width;
   }
 }
-#setting-text {
-  &:checked ~ #setting-text-board {
+#switch-setting {
+  &:checked ~ .board#setting {
     left: 100% - $board-width;
   }
 }
-.close-area{
+.close-area {
   position: absolute;
   z-index: 100;
   display: none;
   width: 100%;
   height: 100%;
 }
-.setting-board {
+.board {
   position: absolute;
   z-index: 100;
   display: flex;
@@ -93,6 +102,53 @@ $board-width: 28%;
       font-weight: 600;
     }
   }
+  .theme {
+    user-select: none;
+    margin-bottom: 20px;
+    display: flex;
+    label {
+      opacity: .4;
+    }
+    input[type="radio"]:checked ~ label {
+      opacity: 1;
+    }
+    input[type="radio"]:not(:checked) ~ label.checkbox {
+      pointer-events: none;
+    }
+    label ~ label {
+      margin-left: 20px;
+    }
+  }
+  input[type="radio"],
+  input[type="checkbox"],
+  input[type="file"] {
+    display: none;
+  }
+  input[type="radio"],
+  input[type="checkbox"] {
+    &:checked + .radio > .on,
+    &:checked + .checkbox > .on {
+      opacity: 1;
+    }
+  }
+  label.radio, label.checkbox {
+    position: relative;
+    margin-left: 5px;
+    display: flex;
+    font-size: 24px;
+    line-height: 1;
+    i {
+      margin-right: 5px;
+    }
+    .on {
+      position: absolute;
+      left: 0;
+      opacity: 0;
+    }
+    .off {
+      display: block;
+    }
+  }
   .button {
     cursor: pointer;
   }
@@ -112,7 +168,7 @@ $board-width: 28%;
     }
   }
 }
-#setting-base-board {
+.board#player-list {
   right: 102%;
   .candidate {
     display: flex;
@@ -204,41 +260,8 @@ $board-width: 28%;
       }
     }
   }
-  .other {
-    label {
-      margin-left: 5px;
-    }
-    #reset-title {
-      margin-left: auto;
-    }
-  }
-  label.button input {
-    display: none;
-  }
-  label.switch {
-    position: relative;
-    margin-left: auto;
-    display: inline-flex;
-    font-size: 24px;
-    align-items: center;
-    user-select: none;
-    input[type="checkbox"]:checked ~ .on {
-      opacity: 1;
-    }
-    i {
-      margin-right: 5px;
-    }
-    .on {
-      position: absolute;
-      left: 0;
-      opacity: 0;
-    }
-    .off {
-      display: block;
-    }
-  }
 }
-#setting-text-board {
+.board#setting {
   left: 102%;
   input {
     padding: 5px 10px;
@@ -248,11 +271,22 @@ $board-width: 28%;
     border-radius: 3px;
   }
 }
+#app {
+  &.WINTER {
+    --main-shadow: drop-shadow(0 0 10px #fff);
+    --thumb-shadow: drop-shadow(0 0 10px #ffb) !important;
+  }
+  &.SUMMER {
+    --main-shadow: drop-shadow(0 0 5px #fff);
+    --thumb-shadow: drop-shadow(0 0 5px #ffb) !important;
+  }
+}
 svg#house {
   position: absolute;
   bottom: 0;
+  user-select: none;
   .shell, .upload *, .lottery *, .result * {
-    filter: drop-shadow(0 0 10px #fff);
+    filter: var(--main-shadow);
   }
   .shell {
     fill: rgba(255, 255, 255, .1);
@@ -293,12 +327,11 @@ svg#house {
       }
       &.trigger {
         fill: rgba(255, 255, 187, 1);
-        filter: drop-shadow(0 0 10px #ffb);
+        filter: var(--thumb-shadow);
       }
     }
   }
   .title {
-    user-select: none;
     text {
       fill: rgba(255, 255, 255, .8);
       font-weight: 600;
@@ -321,7 +354,6 @@ svg#house {
   }
   .prompt, .name {
     fill: rgb(255, 255, 255);
-    user-select: none;
   }
   .name {
     opacity: 0;

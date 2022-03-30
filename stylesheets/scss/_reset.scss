@@ -24,11 +24,8 @@ a {
 html, body {
   height: 100vh;
 }
-body {
-  background: radial-gradient(ellipse at bottom, #65d3ff 0%, #2068c7 100%);
-  &, & * {
-    font-family: 'Open Sans', sans-serif;
-  }
+body, body * {
+  font-family: 'Open Sans', sans-serif;
 }
 [v-cloak] {
   display: none !important;

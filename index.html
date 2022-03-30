@@ -12,18 +12,27 @@
 </head>
 
 <body>
-  <div id="app" v-cloak>
-    <div id="flash-background"></div>
-    <div id="snow" v-bind:class="{ dBlock: openSnow }"></div>
+  <div id="app" :class="theme" v-cloak>
+    <div id="winter-theme" v-show="theme === THEME.WINTER">
+      <div class="background"></div>
+      <div id="snow" v-show="openSnow"></div>
+    </div>
+    <div id="summer-theme" v-show="theme === THEME.SUMMER">
+      <div class="background"></div>
+      <div id="firefly-box" v-show="openFirefly">
+        <div class="firefly" v-for="(item, key, index) in fireflyCount"></div>
+      </div>
+    </div>
+    <div id="flash-screen"></div>
     <img id="logo" src="./images/logo_apartner.png" alt="apartner">
-    <label class="setting-icon base" for="setting-base">
+    <label class="setting-icon base" for="switch-player-list">
       <svg viewbox="0 0 1000 1000">
-        <use href="#test"></use>
+        <use href="#snow-icon"></use>
       </svg>
     </label>
-    <input id="setting-base" type="checkbox">
-    <label class="close-area" for="setting-base"></label>
-    <div id="setting-base-board" class="setting-board">
+    <input id="switch-player-list" type="checkbox">
+    <label class="close-area" for="switch-player-list"></label>
+    <div id="player-list" class="board">
       <div class="block candidate">
         <div class="header">
           <div class="text">伴兒名單</div>
@@ -35,7 +44,7 @@
             <svg class="border">
               <rect width="98%" height="98%" x="1%" y="1%" rx="40" ry="40"></rect>
             </svg>
-            <input id="xlsx" class="dNone" type="file" ref="xlsx" @change="uploadXlsx" accept=".xlsx">
+            <input id="xlsx" type="file" ref="xlsx" @change="uploadXlsx" accept=".xlsx">
             <div class="icon-group">
               <i class="icon fas fa-file-upload"></i>
               <div class="text">(.xlsx)</div>
@@ -52,28 +61,15 @@
           </ul>
         </div>
       </div>
-      <div class="block other">
-        <div class="header">
-          <div class="text">其他設定</div>
-        </div>
-        <div class="content">
-          <label class="button switch" for="toggle-snow">
-            <input id="toggle-snow" type="checkbox" v-model="openSnow" @change="toggleSnow">
-            <i class="fas fa-check-square on"></i>
-            <i class="far fa-square off"></i>
-            下雪效果
-          </label>
-        </div>
-      </div>
     </div>
-    <label class="setting-icon text" for="setting-text">
+    <label class="setting-icon text" for="switch-setting">
       <svg viewbox="0 0 1000 1000">
-        <use href="#test"></use>
+        <use href="#snow-icon"></use>
       </svg>
     </label>
-    <input id="setting-text" type="checkbox">
-    <label class="close-area" for="setting-text"></label>
-    <div id="setting-text-board" class="setting-board">
+    <input id="switch-setting" type="checkbox">
+    <label class="close-area" for="switch-setting"></label>
+    <div id="setting" class="board">
       <div class="block">
         <div class="header">
           <div class="text">主標題</div>
@@ -96,6 +92,41 @@
         </div>
         <div class="content">
           <input type="text" v-model="awardTitle" @blur="saveTitle(key='awardTitle', awardTitle)" @keyup.enter="blurInput">
+        </div>
+      </div>
+      <div class="block">
+        <div class="header">
+          <div class="text">主題設定</div>
+        </div>
+        <div class="content">
+          <div class="theme">
+            <input id="radio-winter" type="radio" v-model="theme" name="theme" value="WINTER" @change="toggleTheme('WINTER')">
+            <label class="button radio" for="radio-winter">
+              <i class="far fa-circle off"></i>
+              <i class="far fa-dot-circle on"></i>
+              冬季主題
+            </label>
+            <input id="switch-snow" type="checkbox" v-model="effect.snow" @change="toggleEffect($event, 'snow')">
+            <label class="button checkbox" for="switch-snow">
+              <i class="far fa-square off"></i>
+              <i class="fas fa-check-square on"></i>
+              下雪效果
+            </label>
+          </div>
+          <div class="theme">
+            <input id="radio-summer" type="radio" v-model="theme" name="theme" value="SUMMER" @change="toggleTheme('SUMMER')">
+            <label class="button radio" for="radio-summer">
+              <i class="far fa-circle off"></i>
+              <i class="far fa-dot-circle on"></i>
+              夏季主題
+            </label>
+            <input id="switch-firefly" type="checkbox" v-model="effect.firefly" @change="toggleEffect($event, 'firefly')">
+            <label class="button checkbox" for="switch-firefly">
+              <i class="far fa-square off"></i>
+              <i class="fas fa-check-square on"></i>
+              螢火蟲效果
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -170,7 +201,7 @@
         <text class="name prompt" v-if="status === 1" x="1000" y="820" text-anchor="middle">OOO-OOO</text>
       </g>
     </svg>
-    <symbol id="test">
+    <symbol id="snow-icon">
       <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)">
         <path d="M4903.4,5012.3c-65.2-26.8-136.1-88.2-168.7-145.7c-28.8-53.7-34.5-143.8-42.2-738.1l-9.6-674.8l-458.2,316.3c-251.1,174.5-481.2,329.7-511.9,345.1c-113.1,59.4-287.6,17.3-368.1-90.1c-84.4-111.2-72.9-295.2,23-387.2c28.8-26.8,333.6-245.4,680.6-485l628.8-437.1l-1.9-996.9c-1.9-546.4-7.7-998.8-11.5-1002.6c-5.8-7.7-1694.7,945.1-1719.6,970c-5.7,7.7-38.3,354.6-70.9,770.7c-34.5,416-69,789.8-80.5,828.2c-40.3,155.3-214.7,253-366.2,207c-97.8-28.8-201.3-132.3-216.6-216.6c-7.7-34.5,9.6-320.2,36.4-636.5c24.9-316.3,46-577,44.1-579c-1.9-1.9-262.6,143.8-579,324c-490.8,279.9-588.5,327.8-671,335.5c-180.2,15.3-316.3-107.4-316.3-285.7c0-99.7,30.7-176.4,88.2-230c21.1-17.3,281.8-174.4,582.8-350.8c301-174.5,552.1-325.9,561.7-333.6c7.7-7.7-214.7-120.8-496.5-253.1c-554-258.8-646-320.1-669-444.8c-32.6-170.6,74.8-339.3,230-370c101.6-19.2,155.3,1.9,941.3,375.7l653.7,310.6l856.9-502.3c471.6-278,851.2-509.9,841.6-517.6c-7.7-7.7-394.9-235.8-856.9-508l-841.6-492.7l-653.7,310.6c-824.3,391.1-843.5,398.8-950.9,366.2c-232-69-301-348.9-124.6-510c36.4-32.6,289.5-162.9,573.2-295.2c281.8-132.3,504.2-245.4,496.5-253.1c-9.6-7.7-260.7-159.1-561.7-333.6c-301-176.4-569.4-343.1-600-370c-101.6-95.8-111.2-279.9-19.2-389.1c67.1-78.6,141.9-113.1,245.4-113.1c78.6,0,149.5,34.5,676.7,333.6c322.1,184,588.5,333.6,590.5,331.7c3.8-1.9-17.2-270.3-44.1-594.3c-47.9-575.1-47.9-592.4-13.4-667.1c59.4-136.1,205.1-203.2,352.7-166.8c93.9,24.9,205.1,139.9,218.5,230.1c5.8,34.5,38.3,400.6,70.9,810.9c32.6,412.1,65.2,753.4,72.8,761.1c23,24.9,1711.9,977.7,1717.7,970c17.3-17.2,11.5-1976.5-5.8-1993.7c-9.6-9.6-302.9-214.7-648-454.3c-393-272.2-646-460.1-674.8-500.4c-30.7-46-42.2-92-42.2-161c0-184,141.9-312.5,325.9-295.2c78.6,7.7,147.6,47.9,577,345.1l486.9,337.4l9.6-694c11.5-766.8,11.5-766.8,138-858.8c47.9-34.5,88.2-44.1,172.5-44.1c116.9,0,180.2,32.6,253.1,132.3c38.3,49.8,40.3,80.5,46,751.5c1.9,383.4,13.4,697.8,21.1,697.8c9.6,0,216.6-138,462-306.7c243.5-168.7,467.8-320.2,498.4-335.5c113.1-59.4,283.7-23,360.4,76.7c92,115,90.1,289.5-1.9,389.2c-23,24.9-329.7,243.5-678.6,486.9L5325.2-2447v995c0,546.4,5.8,994.9,13.4,994.9c13.4,0,1652.5-929.8,1698.5-964.3c26.8-19.2,42.2-151.4,97.8-809c47.9-588.5,70.9-803.2,93.9-847.3c67.1-126.5,214.7-193.6,348.9-157.2c95.8,26.8,195.5,130.4,212.8,220.4c5.8,36.4-9.6,324-34.5,636.5c-26.8,312.5-46,571.3-44.1,573.2c0,1.9,260.7-143.8,575.1-324c571.3-327.8,575.1-329.7,694-331.6c132.3,0,199.4,36.4,260.7,139.9c44.1,74.8,46,209,5.7,287.6c-42.2,82.4-84.3,111.2-688.2,463.9c-293.3,170.6-529.1,314.4-527.2,316.3c3.8,3.8,239.6,115,523.4,249.2c285.6,134.2,540.6,266.5,569.4,293.3c107.4,99.7,118.9,276.1,26.8,394.9c-57.5,76.7-195.5,136.1-278,120.8c-30.7-5.7-375.7-162.9-768.7-348.9c-391.1-184-715.1-335.5-717-335.5c-19.2,0-1700.4,994.9-1700.4,1006.5c0,13.4,1683.2,1006.5,1706.2,1006.5c5.8,0,333.6-151.5,728.5-339.3c776.4-366.2,810.9-377.7,943.2-301c109.3,65.2,155.3,153.4,147.6,278c-13.4,182.1-24.9,191.7-628.8,477.3c-295.2,141.9-536.8,260.7-536.8,266.5c0,5.8,243.5,153.4,542.5,327.8c297.1,174.5,567.5,341.2,602,370c199.4,174.5,65.2,511.9-205.1,511.9c-94,0-70.9,11.5-724.6-358.5c-287.6-164.9-529.1-293.3-532.9-287.6c-5.8,5.8,7.7,237.7,30.7,515.7c53.7,653.7,53.7,684.4,0,772.6c-47.9,76.7-164.9,141.9-255,143.8c-117,0-266.5-109.3-291.4-216.6c-5.8-23-40.3-391.1-74.8-816.7c-55.6-680.6-67.1-778.3-97.8-799.4c-51.8-38.3-1688.9-966.2-1702.3-966.2c-7.7,0-13.4,450.5-13.4,1002.6v1002.6l657.5,454.3c381.5,264.6,671,477.4,688.2,508c51.8,86.3,59.4,178.3,24.9,268.4c-57.5,143.8-189.8,216.6-343.2,187.9c-38.3-7.7-255-145.7-550.2-348.9l-486.9-335.5L5306,4142c-9.6,657.6-11.5,692.1-49.8,741.9c-65.2,88.2-132.3,128.4-232,134.2C4974.4,5021.9,4918.8,5020,4903.4,5012.3z"/>
       </g>

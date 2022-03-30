@@ -1,3 +1,8 @@
+const THEME = {
+  WINTER: 'WINTER',
+  SUMMER: 'SUMMER'
+}
+
 const app = new Vue({
   el: '#app',
   data: {
@@ -7,15 +12,24 @@ const app = new Vue({
     lineLength: 920,
     lineStart: 540,
     lineEnd: 1460,
-    openSnow: true,
+    theme: THEME.WINTER,
+    effect: {
+      snow: true,
+      firefly: true,
+    },
+    fireflyCount: 30,
     status: 0, // 上傳前: 0, 上傳後: 1, 洗牌中: 2, 出現得獎者:3
     persons: [],
     round: 1,
   },
   methods: {
-    toggleSnow(ev) {
-      this.openSnow = ev.target.checked
-      localStorage.setItem('snowSwitch', ev.target.checked)
+    toggleTheme(themeName) {
+      console.log('here')
+      localStorage.setItem('theme', themeName)
+    },
+    toggleEffect(ev, effectName) {
+      this.effect[effectName] = ev.target.checked
+      localStorage.setItem('effect', JSON.stringify(this.effect))
     },
     setStatus(status) {
       this.status = status
@@ -72,6 +86,12 @@ const app = new Vue({
     }
   },
   computed: {
+    openSnow() {
+      return this.theme === THEME.WINTER && this.effect.snow
+    },
+    openFirefly() {
+      return this.theme === THEME.SUMMER && this.effect.firefly
+    },
     winners() {
       return this.persons.filter(p => p.isWinner)
         .sort((p1, p2) => p1.winRound - p2.winRound)
@@ -81,8 +101,13 @@ const app = new Vue({
     }
   },
   created() {
-    if (localStorage.getItem('snowSwitch') === 'false') {
-      this.openSnow = false
+    const theme = localStorage.getItem('theme')
+    if (theme) {
+      this.theme = theme
+    }
+    const effect = JSON.parse(localStorage.getItem('effect'))
+    if (effect !== null) {
+      this.effect = effect
     }
     const mainTitle = localStorage.getItem('mainTitle')
     if (mainTitle) {
@@ -189,7 +214,7 @@ function popWinner(winner, interval) {
   )
 }
 function endingFlash() {
-  const flashBackground = document.getElementById('flash-background')
+  const flashBackground = document.getElementById('flash-screen')
   flashBackground.animate([
     { backgroundColor: 'rgba(255,255,255,0.7)' },
     { backgroundColor: 'rgba(255,255,255,0)' }
