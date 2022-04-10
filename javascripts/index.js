@@ -19,12 +19,12 @@ const app = new Vue({
     },
     fireflyCount: 30,
     status: 0, // 上傳前: 0, 上傳後: 1, 洗牌中: 2, 出現得獎者:3
+    banning: false,
     persons: [],
     round: 1,
   },
   methods: {
     toggleTheme(themeName) {
-      console.log('here')
       localStorage.setItem('theme', themeName)
     },
     toggleEffect(ev, effectName) {
@@ -37,9 +37,24 @@ const app = new Vue({
     openUploadWindow() {
       this.$refs.xlsx.click()
     },
+    resetBoard() {
+      this.banning = false
+    },
+    toggleBanPersons() {
+      this.banning = !this.banning
+    },
+    banPersons (person) {
+      if (person.ban) {
+        person.ban = false
+      } else {
+        person.ban = true
+      }
+      resetThumb()
+    },
     clearPersons() {
       this.persons = []
       this.status = 0
+      this.banning = false
       this.round = 1
     },
     async uploadXlsx(ev) {
@@ -63,7 +78,7 @@ const app = new Vue({
         if (name === '') {
           continue
         }
-        this.persons.push({ id: i++, name, isWinner: false })
+        this.persons.push({ id: i++, name, isWinner: false, ban: false })
       }
       
       if (this.persons.length <= 0) {
@@ -178,7 +193,8 @@ async function runShuffle() {
     currentPerson = person
   }
   // 抽出最終得獎者
-  const winner = getRandomPerson(candidates, currentPerson.id)
+  const candidatesFinal = candidates.filter(p => !p.ban)
+  const winner = getRandomPerson(candidatesFinal, currentPerson.id)
   endingFlash()
   app.setStatus(3)
   popWinner(winner, mina.easeout(36) * 2)
@@ -233,13 +249,19 @@ function resetAll() {
   })
 }
 function resetThumb() {
-  const candidates = app.persons.filter(p => !p.isWinner)
+  const candidates = app.persons.filter(p => !p.isWinner && !p.ban)
   if (candidates.length > 0) {
-    setThumb()
+    thumbOn()
+  } else {
+    thumbOff()
   }
 }
-function setThumb() {
+function thumbOn() {
   thumb.drag(dragMove, dragStart, dragEnd)
   thumb.removeClass('trigger')
 }
-setThumb()
+function thumbOff() {
+  thumb.undrag()
+  thumb.addClass('trigger')
+}
+thumbOn()

@@ -31,12 +31,14 @@
       </svg>
     </label>
     <input id="switch-player-list" type="checkbox">
-    <label class="close-area" for="switch-player-list"></label>
+    <label class="close-area" for="switch-player-list" @click="resetBoard"></label>
     <div id="player-list" class="board">
-      <div class="block candidate">
+      <div class="block candidate" :class="{ banning }">
         <div class="header">
-          <div class="text">伴兒名單</div>
-          <div class="count" v-if="status >= 1">({{ persons.length }})</div>
+          <div class="text" :class="{ button: status == 1 }" @click="status == 1 ? toggleBanPersons() : null">
+            伴兒名單
+            <span class="count" v-if="status >= 1">({{ persons.length }})</span>
+          </div>
           <button id="reset-person" @click="clearPersons" v-bind:disabled="status !== 1">重設名單</button>
         </div>
         <div class="content">
@@ -51,11 +53,11 @@
             </div>
           </label>
           <ul v-if="status > 0">
-            <li class="person winner" v-for="(person, index) in winners">
+            <li class="person winner" v-for="(person, index) in winners" v-if="!banning">
               <span>{{ person.name }}</span>
               <span class="remark">已中獎 #{{ person.winRound }}</span>
             </li>
-            <li class="person" v-for="(person, index) in losers">
+            <li class="person" :class="{ ban: person.ban }" v-for="(person, index) in losers" @click="banning ? banPersons(person) : null">
               <span>{{ person.name }}</span>
             </li>
           </ul>

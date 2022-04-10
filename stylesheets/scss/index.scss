@@ -97,6 +97,7 @@ $board-width: 28%;
     margin-bottom: 20px;
     color: #55c;
     border-bottom: 3px solid #55c;
+    user-select: none;
     .text {
       font-size: 36px;
       font-weight: 600;
@@ -175,7 +176,8 @@ $board-width: 28%;
     flex-direction: column;
     height: 75%;
     .count {
-      margin-left: 7px;
+      display: inline-block;
+      margin-bottom: 4px;
       vertical-align: bottom;
     }
     #reset-person {
@@ -251,12 +253,31 @@ $board-width: 28%;
     }
     .person {
       display: block;
-      padding: 4px 10px 4px 0;
+      padding: 4px 0 4px 0;
       &.winner * {
-        color: rgb(255, 51, 51);
+        color: #ff3;
       }
       .remark {
         float: right;
+      }
+    }
+  }
+  .candidate.banning {
+    .person {
+      cursor: pointer;
+      user-select: none;
+      &::before {
+        content: '\f058';
+        display: inline-block;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        width: 36px;
+      }
+    }
+    .person.ban {
+      opacity: 0.4;
+      &::before {
+        content: '\f057';
       }
     }
   }
