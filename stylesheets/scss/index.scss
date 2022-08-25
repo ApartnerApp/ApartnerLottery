@@ -1,4 +1,5 @@
 @import "reset";
+@import "beach";
 @import "firefly";
 @import "snow";
 
@@ -31,7 +32,7 @@
   cursor: pointer;
   svg {
     fill: transparent;
-    filter: drop-shadow(0 0 5px #fff);
+    filter: var(--setting-icon-shadow);
     transform: scale(0.6);
     transition: all .3s;
   }
@@ -255,7 +256,7 @@ $board-width: 28%;
       display: block;
       padding: 4px 0 4px 0;
       &.winner * {
-        color: #ff3;
+        color: var(--winner-color);
       }
       .remark {
         float: right;
@@ -284,6 +285,7 @@ $board-width: 28%;
 }
 .board#setting {
   left: 102%;
+  overflow-y: auto;
   input {
     padding: 5px 10px;
     width: 100%;
@@ -293,13 +295,25 @@ $board-width: 28%;
   }
 }
 #app {
-  &.WINTER {
+  &.WINTER, &.BEACH {
     --main-shadow: drop-shadow(0 0 10px #fff);
     --thumb-shadow: drop-shadow(0 0 10px #ffb) !important;
+    --winner-color: #f22;
+  }
+  &.WINTER {
+    --setting-icon-shadow: drop-shadow(0 0 5px #fff);
+    --shell-opacity: 0.1;
   }
   &.SUMMER {
     --main-shadow: drop-shadow(0 0 5px #fff);
     --thumb-shadow: drop-shadow(0 0 5px #ffb) !important;
+    --setting-icon-shadow: drop-shadow(0 0 5px #fff);
+    --shell-opacity: 0.1;
+    --winner-color: #ff3;
+  }
+  &.BEACH {
+    --setting-icon-shadow: drop-shadow(0 0 5px #77f);
+    --shell-opacity: 0.2;
   }
 }
 svg#house {
@@ -310,7 +324,7 @@ svg#house {
     filter: var(--main-shadow);
   }
   .shell {
-    fill: rgba(255, 255, 255, .1);
+    fill: rgba(255, 255, 255, var(--shell-opacity));
   }
   .upload {
     .hover-area {
@@ -325,7 +339,7 @@ svg#house {
       transform: translateY(-20px);
     }
     .icon {
-      fill: url(#uploadGradient);
+      fill: url(#upload-gradient);
       opacity: 0;
       transition: all .3s;
     }

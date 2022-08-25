@@ -27,6 +27,9 @@ html, body {
 body, body * {
   font-family: 'Open Sans', sans-serif;
 }
+body {
+  position: relative;
+}
 [v-cloak] {
   display: none !important;
 }

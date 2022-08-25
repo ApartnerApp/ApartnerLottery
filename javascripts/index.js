@@ -1,8 +1,8 @@
 const THEME = {
   WINTER: 'WINTER',
-  SUMMER: 'SUMMER'
+  SUMMER: 'SUMMER',
+  BEACH: 'BEACH',
 }
-
 const app = new Vue({
   el: '#app',
   data: {
@@ -16,20 +16,75 @@ const app = new Vue({
     effect: {
       snow: true,
       firefly: true,
+      cloud: true,
     },
     fireflyCount: 30,
     status: 0, // 上傳前: 0, 上傳後: 1, 洗牌中: 2, 出現得獎者:3
     banning: false,
     persons: [],
     round: 1,
+    cloudBox: null,
+    cloudInitLeft: ['5%', '30%', '55%', '80%'],
   },
   methods: {
     toggleTheme(themeName) {
       localStorage.setItem('theme', themeName)
+      this.clearCloud()
+      this.initTheme()
     },
     toggleEffect(ev, effectName) {
       this.effect[effectName] = ev.target.checked
       localStorage.setItem('effect', JSON.stringify(this.effect))
+    },
+    initTheme() {
+      switch (this.theme) {
+        case THEME.BEACH:
+          if (this.effect.cloud) {
+            this.resetCloud()
+          }
+          break
+        default:
+          break
+      }
+    },
+    resetCloud() {
+      for (let i = 0; i < 4; i++) {
+        this.addCloud(this.cloudInitLeft[i])
+      }
+      this.addCloud()
+      this.nextCloud()
+    },
+    clearCloud() {
+      clearInterval(this.cloudTimeout)
+      this.cloudBox.innerHTML = ''
+    },
+    addCloud(startLeft = '-25%') {
+      const temp = document.getElementById('template-cloud')
+      const scale = randomFloat(3, 6)
+      const top = randomFloat(15, 55)
+      const speed = 1 // 速度 = 1% / 秒
+      const duration = (100 - parseInt(startLeft)) / speed * 1000 // 時長 = 距離 / 速度
+      const cloud = temp.content.cloneNode(true).childNodes[1]
+      this.cloudBox.appendChild(cloud)
+      cloud.style.top = `${top}%`
+      cloud.style.transform = `scale(${scale})`
+      cloud.animate([{
+        left: startLeft,
+      }, {
+        left: '100%',
+      }], {
+        duration,
+        iterations: 1,
+        easing: 'linear', 
+      }).onfinish = function() {
+        this.effect.target.remove()
+      }
+    },
+    nextCloud() {
+      this.cloudTimeout = setTimeout(() => {
+        this.addCloud()
+        this.nextCloud()
+      }, randomFloat(15000, 25000))
     },
     setStatus(status) {
       this.status = status
@@ -85,6 +140,7 @@ const app = new Vue({
         ev.target.value = null
         return
       }
+      resetThumb()
       this.status = 1
     },
     saveTitle(key, text) {
@@ -101,18 +157,21 @@ const app = new Vue({
     }
   },
   computed: {
-    openSnow() {
-      return this.theme === THEME.WINTER && this.effect.snow
-    },
-    openFirefly() {
-      return this.theme === THEME.SUMMER && this.effect.firefly
-    },
     winners() {
       return this.persons.filter(p => p.isWinner)
         .sort((p1, p2) => p1.winRound - p2.winRound)
     },
     losers() {
       return this.persons.filter(p => !p.isWinner)
+    },
+  },
+  watch: {
+    'effect.cloud'() {
+      if (this.effect.cloud) {
+        this.initTheme()
+      } else {
+        this.clearCloud()
+      }
     }
   },
   created() {
@@ -129,13 +188,17 @@ const app = new Vue({
       this.mainTitle = mainTitle
     }
     const subTitle = localStorage.getItem('subTitle')
-    if (localStorage.getItem('subTitle')) {
+    if (subTitle) {
       this.subTitle = subTitle
     }
     const awardTitle = localStorage.getItem('awardTitle')
-    if (localStorage.getItem('awardTitle')) {
+    if (awardTitle) {
       this.awardTitle = awardTitle
     }
+  },
+  mounted() {
+    this.cloudBox = this.$el.querySelector('#cloud-box')
+    this.initTheme()
   }
 })
 
@@ -145,11 +208,11 @@ const prompt = Snap.select('#house .lottery .prompt')
 const lotteryGroup = Snap.select('#house .lottery')
 const houseHeight = document.getElementById('house').getBoundingClientRect().height
 
-let thumbAdjustY;
-const thumbInitY = +thumb.attr('y'),
-      thumbMinY = +thumb.attr('y'),
-      thumbMaxY = 890,
-      critical = (thumbMaxY - thumbMinY) * 0.9 + thumbMinY
+let thumbAdjustY
+const thumbInitY = +thumb.attr('y')
+const thumbMinY = +thumb.attr('y')
+const thumbMaxY = 890
+const critical = (thumbMaxY - thumbMinY) * 0.9 + thumbMinY
 
 function dragMove(_dx, _dy, _x, y, _ev) {
   let currentY = (y * 1000 / houseHeight - thumbAdjustY)
@@ -264,4 +327,3 @@ function thumbOff() {
   thumb.undrag()
   thumb.addClass('trigger')
 }
-thumbOn()

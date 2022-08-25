@@ -1,0 +1,60 @@
+#app.BEACH {
+  #logo, svg#house .title > * {
+    filter: drop-shadow(0 0 5px #4096f1);
+  }
+  svg#sand {
+    position: absolute;
+    bottom: 0;
+    transform: translateY(37%) scaleX(-1);
+    pointer-events: none;
+  }
+}
+#beach-theme {
+  width: 100%;
+  height: 100%;
+  .background {
+    background: linear-gradient(to top, #2F80ED, #56CCF2);
+  }
+  .cloud {
+    position: absolute;
+    transform-origin: 0% 100%;
+    div:nth-child(1) {
+      margin: 0 5px 0 3px;
+      width: 56px;
+      height: 7px;
+      border-radius: 13px;
+      background: #f7e7eb;
+    }
+    div:nth-child(n+2):nth-child(-n+5) {
+      position: absolute;
+      bottom: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fafbf0;
+      box-shadow: inset -2px -3px 0 0 #f7e7eb;
+      transform-origin: 50% 100%;
+      transform: scale(var(--scale));
+    }
+    div:nth-child(2) {
+      --scale: 1;
+      left: 0;
+      z-index: 10;
+    }
+    div:nth-child(3) {
+      --scale: calc(19 / 12);
+      left: 13px;
+      z-index: 9;
+    }
+    div:nth-child(4) {
+      --scale: calc(29 / 12);
+      left: 32px;
+      z-index: 8;
+    }
+    div:nth-child(5) {
+      --scale: calc(16 / 12);
+      left: 50px;
+      z-index: 7;
+    }
+  }
+}
