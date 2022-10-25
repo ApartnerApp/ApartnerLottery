@@ -24,7 +24,7 @@ const app = new Vue({
     persons: [],
     round: 1,
     cloudBox: null,
-    cloudInitLeft: ['5%', '30%', '55%', '80%'],
+    cloudInitRight: ['80%', '55%', '30%', '5%'],
   },
   methods: {
     toggleTheme(themeName) {
@@ -49,7 +49,7 @@ const app = new Vue({
     },
     resetCloud() {
       for (let i = 0; i < 4; i++) {
-        this.addCloud(this.cloudInitLeft[i])
+        this.addCloud(this.cloudInitRight[i])
       }
       this.addCloud()
       this.nextCloud()
@@ -58,20 +58,20 @@ const app = new Vue({
       clearInterval(this.cloudTimeout)
       this.cloudBox.innerHTML = ''
     },
-    addCloud(startLeft = '-25%') {
+    addCloud(startRight = '100%') {
       const temp = document.getElementById('template-cloud')
       const scale = randomFloat(3, 6)
       const top = randomFloat(15, 55)
       const speed = 1 // 速度 = 1% / 秒
-      const duration = (100 - parseInt(startLeft)) / speed * 1000 // 時長 = 距離 / 速度
+      const duration = (parseInt(startRight) + 100) / speed * 1000 // 時長 = 距離 / 速度
       const cloud = temp.content.cloneNode(true).childNodes[1]
       this.cloudBox.appendChild(cloud)
       cloud.style.top = `${top}%`
       cloud.style.transform = `scale(${scale})`
       cloud.animate([{
-        left: startLeft,
+        right: startRight,
       }, {
-        left: '100%',
+        right: '-100%',
       }], {
         duration,
         iterations: 1,
