@@ -6,9 +6,9 @@ const THEME = {
 const app = new Vue({
   el: '#app',
   data: {
-    mainTitle: '12月份滿意度調查抽獎',
-    subTitle: '半伴共居公寓',
-    awardTitle: '租金優惠$1000',
+    mainTitle: '',
+    subTitle: '',
+    awardTitle: '',
     lineLength: 920,
     lineStart: 540,
     lineEnd: 1460,

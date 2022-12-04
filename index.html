@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" href="#">
-  <title>幸運伴兒</title>
+  <title>抽獎小幫手</title>
   <link rel="icon" href="./images/logo_house.png">
   <link rel="stylesheet" href="./stylesheets/css/index.min.css">
 </head>
@@ -40,7 +40,7 @@
       <div class="block candidate" :class="{ banning }">
         <div class="header">
           <div class="text" :class="{ button: status == 1 }" @click="status == 1 ? toggleBanPersons() : null">
-            伴兒名單
+            抽獎名單
             <span class="count" v-if="status >= 1">({{ persons.length }})</span>
           </div>
           <button id="reset-person" @click="clearPersons" v-bind:disabled="status !== 1">重設名單</button>
